@@ -2,7 +2,7 @@ def print_decision(lessons, scenario)
   limit = 3
   counter = 1
   lessons.each do |lesson|
-    applicability = lesson.applicability.call(scenario)
+    applicability = lesson.applicability(scenario)
     if counter > 3 or applicability < 0.01
       break
     end

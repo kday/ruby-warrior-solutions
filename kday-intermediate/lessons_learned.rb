@@ -1,7 +1,7 @@
 require_relative 'action'
 
 lesson "Rest when health < 20 and no enemies near by" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     enemy_spaces = scenario.neighbors('enemy?')
     if scenario.warrior_health < 20 and enemy_spaces.count == 0
       return 0.4
@@ -9,13 +9,13 @@ lesson "Rest when health < 20 and no enemies near by" do
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     return Action.new('rest!')
   }
 end
 
 lesson "Attack when at least one enemy is near by and no captives ticking" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     total_neighbor_enemies = scenario.neighbors('Sludge').count + scenario.neighbors('Thick Sludge').count
     if total_neighbor_enemies > 0 and scenario.all_spaces('ticking?').count == 0
       return 0.8
@@ -23,7 +23,7 @@ lesson "Attack when at least one enemy is near by and no captives ticking" do
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     if not scenario.any_unbound_enemy_neighbor_direction.nil?
       direction =  scenario.any_unbound_enemy_neighbor_direction
     else
@@ -34,7 +34,7 @@ lesson "Attack when at least one enemy is near by and no captives ticking" do
 end
 
 lesson "Move toward the door if health is full and path is clear and level is cleared" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     open_spaces = scenario.neighbors("empty?")
     if scenario.warrior_health == 20 and open_spaces.include?(scenario.direction_of_stairs) and scenario.all_spaces.count == 0
       return 0.2
@@ -42,13 +42,13 @@ lesson "Move toward the door if health is full and path is clear and level is cl
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     return Action.new('walk!', scenario.direction_of_stairs)
   }
 end
 
 lesson "Moves to open space if health is full and path is blocked" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     open_spaces = scenario.neighbors("empty?")
     enemy_spaces = scenario.neighbors('enemy?')
     if scenario.warrior_health == 20 and not open_spaces.include?(scenario.direction_of_stairs) and not enemy_spaces.include?(scenario.direction_of_stairs)
@@ -57,20 +57,20 @@ lesson "Moves to open space if health is full and path is blocked" do
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     return Action.new('walk!', scenario.neighbors("empty?")[0])
   }
 end
 
 lesson "Bind when more than one enemy is near and bind Thick Sludge first" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     if scenario.neighbors('enemy?').count > 1
       return 1.0
     else
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     thick_sludge_neighbors = scenario.neighbors('Thick Sludge')
     if thick_sludge_neighbors.count == 1 and scenario.neighbors('enemy?').include?(thick_sludge_neighbors[0])
       bind_direction = thick_sludge_neighbors[0]
@@ -82,46 +82,46 @@ lesson "Bind when more than one enemy is near and bind Thick Sludge first" do
 end
 
 lesson "Walk toward ticking captives before fighting and path clear" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     if scenario.all_spaces('ticking?').count > 0 and scenario.neighbors('empty?').include?(scenario.direction_of_ticking)
       return 0.9
     else
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     return Action.new('walk!', scenario.direction_of_ticking)
   }
 end
 
 lesson "Attack enemies blocking path to ticking captives" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     if scenario.all_spaces('ticking?').count > 0 and not scenario.neighbors('empty?').include?(scenario.direction_of_ticking) and scenario.neighbors('ticking?').count == 0 and scenario.neighbors('enemy?').include?(scenario.direction_of_ticking)
       return 0.9
     else
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     return Action.new('attack!', scenario.direction_of_ticking)
   }
 end
 
 lesson "Rescue neighboring ticking captives before fighting" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     if scenario.neighbors('ticking?').count > 0
       return 1.0
     else
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     return Action.new('rescue!', scenario.direction_of_ticking)
   }
 end
 
 lesson "Detonate bomb if two enemies are blocking a ticking captive" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     if scenario.all_spaces('ticking?').count > 0 and
         scenario.spaces_toward_ticking.count > 0 and
         scenario.spaces_toward_ticking[0].enemy? and
@@ -131,85 +131,85 @@ lesson "Detonate bomb if two enemies are blocking a ticking captive" do
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     return Action.new('detonate!', scenario.direction_of_ticking)
   }
 end
 
 lesson "Rest if neighboring enemies are bound and health < 10 and unbound enemies block ticking captive" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     if scenario.warrior_health < 10 and scenario.all_spaces('ticking?').count > 0 and scenario.neighbors('enemy?').count == 0 and (scenario.all_spaces('Sludge').count + scenario.all_spaces('Thick Sludge').count) > (scenario.neighbors('Sludge').count + scenario.neighbors('Thick Sludge').count) and (scenario.spaces_toward_ticking[0].enemy? or scenario.spaces_toward_ticking[1].enemy? or scenario.spaces_toward_ticking[2].enemy?)
       return 1.0
     else
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     return Action.new('rest!')
   }
 end
 
 lesson "Attack enemy blocking ticking captive even if enemy is bound" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     if scenario.all_spaces('ticking?').count > 0 and scenario.neighbor(scenario.direction_of_ticking).to_s == 'Sludge' or scenario.neighbor(scenario.direction_of_ticking).to_s == 'Thick Sludge'
       return 1.0
     else
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     return Action.new('attack!', scenario.direction_of_ticking)
   }
 end
 
 lesson "Move toward enemy if not a neighbor and health is full and no ticking and path cleear" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     if (scenario.all_spaces('Sludge').count > 0 or scenario.all_spaces('Thick Sludge').count > 0) and scenario.warrior_health == 20 and scenario.direction_of_ticking.nil? and scenario.neighbors('empty?').include?(scenario.targeted_enemy_direction)
       return 0.7
     else
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     return Action.new('walk!', scenario.targeted_enemy_direction)
   }
 end
 
 lesson "Rest when helath < 20 and neighbor enemies bound and no ticking" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     if scenario.warrior_health < 20 and scenario.neighbors('enemy?').count == 0 and scenario.direction_of_ticking.nil? and not scenario.any_enemy_neighbor_direction.nil?
       return 1.0
     else
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     return Action.new('rest!')
   }
 end
 
 lesson "Walk toward captive when level is clear except for captive" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     if not scenario.targeted_captive_direction.nil? and scenario.targeted_enemy_direction.nil? and scenario.neighbors('Captive').count == 0
       return 0.8
     else
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     return Action.new('walk!', scenario.targeted_captive_direction)
   }
 end
 
 lesson "Rescue captive if they're a neighbor" do
-  scenario_applicability lambda { |scenario|
+  conditions ->(scenario) {
     if scenario.neighbors('Captive').count > 0
       return 0.4
     else
       return 0.0
     end
   }
-  take_action lambda { |scenario|
+  response ->(scenario) {
     return Action.new('rescue!', scenario.targeted_captive_direction)
   }
 end

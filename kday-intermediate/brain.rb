@@ -4,19 +4,15 @@ require_relative 'helpers'
 class Brain
   attr_accessor :knowledge
 
-  def initialize
-    self.knowledge = Knowledge.all
-  end
-
   def decide(scenario)
-    sorted_lessons = self.knowledge.sort_by { |lesson| -lesson.applicability.call(scenario) }
+    sorted_lessons = Knowledge.all.sort_by { |lesson| -lesson.applicability(scenario) }
     most_applicable_lesson = sorted_lessons.first
 
-    if most_applicable_lesson.applicability.call(scenario) < 0.01
+    if most_applicable_lesson.applicability(scenario) < 0.01
       raise "I don't have any experience with this scenario!"
     else
       print_decision(sorted_lessons, scenario)
-      return most_applicable_lesson.action.call(scenario)
+      return most_applicable_lesson.respond(scenario)
     end
   end
 end

@@ -1,15 +1,23 @@
 class Lesson
-  attr_accessor :description, :applicability, :action
+  attr_accessor :description, :stored_conditions, :action
 
   def initialize(description)
     self.description = description
   end
 
-  def scenario_applicability(proc)
-    self.applicability = proc
+  def conditions(proc)
+    self.stored_conditions = proc
   end
 
-  def take_action(proc)
+  def applicability(scenario)
+    self.stored_conditions.call(scenario)
+  end
+
+  def response(proc)
     self.action = proc
+  end
+
+  def respond(scenario)
+    self.action.call(scenario)
   end
 end
