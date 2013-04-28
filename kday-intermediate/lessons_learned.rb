@@ -184,7 +184,9 @@ lesson "Move toward enemy if not a neighbor and health is full and no ticking an
     end
   }
   response ->(scenario) {
-    return Action.new('walk!', scenario.neighbors('empty?')[0])
+    empty_spaces = scenario.neighbors('empty?')
+    empty_spaces.delete(scenario.targeted_enemy_direction)
+    return Action.new('walk!', empty_spaces.sample)
   }
 end
 
