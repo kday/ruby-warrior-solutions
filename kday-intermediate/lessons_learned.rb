@@ -162,9 +162,9 @@ lesson "Attack enemy blocking ticking captive even if enemy is bound" do
   }
 end
 
-lesson "Move toward enemy if not a neighbor and health is full and no ticking and path cleear" do
+lesson "Move toward enemy if not a neighbor and health is full and no ticking and path clear" do
   conditions ->(scenario) {
-    if (scenario.all_spaces('Sludge').count > 0 or scenario.all_spaces('Thick Sludge').count > 0) and scenario.warrior_health == 20 and scenario.direction_of_ticking.nil? and scenario.neighbors('empty?').include?(scenario.targeted_enemy_direction)
+    if (scenario.all_spaces('Sludge').count > 0 or scenario.all_spaces('Thick Sludge').count > 0) and scenario.warrior_health == 20 and scenario.direction_of_ticking.nil? and scenario.neighbors('empty?').include?(scenario.targeted_enemy_direction) and not scenario.neighbors('stairs?').include?(scenario.targeted_enemy_direction)
       return 0.7
     else
       return 0.0
@@ -172,6 +172,19 @@ lesson "Move toward enemy if not a neighbor and health is full and no ticking an
   }
   response ->(scenario) {
     return Action.new('walk!', scenario.targeted_enemy_direction)
+  }
+end
+
+lesson "Move toward enemy if not a neighbor and health is full and no ticking and path is blocked" do
+  conditions ->(scenario) {
+    if (scenario.all_spaces('Sludge').count > 0 or scenario.all_spaces('Thick Sludge').count > 0) and scenario.warrior_health == 20 and scenario.direction_of_ticking.nil? and scenario.neighbors('empty?').include?(scenario.targeted_enemy_direction) and scenario.neighbors('stairs?').include?(scenario.targeted_enemy_direction)
+      return 0.8
+    else
+      return 0.0
+    end
+  }
+  response ->(scenario) {
+    return Action.new('walk!', scenario.neighbors('empty?')[0])
   }
 end
 

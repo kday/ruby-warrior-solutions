@@ -11,6 +11,10 @@ class Space
     false
   end
 
+  def stairs?
+    false
+  end
+
   def to_s
     'Empty'
   end
@@ -82,5 +86,15 @@ class CaptiveSpace < Space
 
   def to_s
     'Captive'
+  end
+end
+
+class StairsSpace < Space
+  def to_s
+    'Stairs'
+  end
+
+  def stairs?
+    true
   end
 end
