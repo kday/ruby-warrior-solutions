@@ -2,7 +2,7 @@ require_relative 'knowledge'
 require_relative 'helpers'
 
 class Brain
-  def decide(scenario)
+  def self.decide(scenario)
     sorted_lessons = Knowledge.all.sort_by { |lesson| -lesson.applicability(scenario) }
     most_applicable_lesson = sorted_lessons.first
 
