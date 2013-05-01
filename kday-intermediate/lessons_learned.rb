@@ -1,9 +1,8 @@
 require_relative 'action'
 
-lesson "Rest when health < 20 and no enemies near by" do
+lesson "Rest when health < 20 and no enemies near by and level is not cleared yet" do
   conditions ->(scenario) {
-    enemy_spaces = scenario.neighbors('enemy?')
-    if scenario.warrior_health < 20 and enemy_spaces.count == 0
+    if scenario.warrior_health < 20 and scenario.neighbors('enemy?').count == 0 and scenario.all_spaces().count > 0
       return 0.4
     else
       return 0.0
@@ -33,10 +32,9 @@ lesson "Attack when at least one unbound enemy is near by and no captives tickin
   }
 end
 
-lesson "Move toward the door if health is full and path is clear and level is cleared" do
+lesson "Walk toward the stairs if level is cleared and path clear" do
   conditions ->(scenario) {
-    open_spaces = scenario.neighbors("empty?") and not scenario.any_enemies?
-    if scenario.warrior_health == 20 and open_spaces.include?(scenario.direction_of_stairs) and scenario.all_spaces.count == 0
+    if scenario.all_spaces.count == 0 and scenario.neighbors('empty?').include?(scenario.direction_of_stairs)
       return 0.2
     else
       return 0.0
@@ -47,7 +45,20 @@ lesson "Move toward the door if health is full and path is clear and level is cl
   }
 end
 
-lesson "Moves to open space if health is full and path is blocked" do
+lesson "Walk toward the stairs if level is cleared and path blocked" do
+  conditions ->(scenario) {
+    if scenario.all_spaces.count == 0 and not scenario.neighbors('empty?').include?(scenario.direction_of_stairs)
+      return 0.1
+    else
+      return 0.0
+    end
+  }
+  response ->(scenario) {
+    return Action.new('walk!', scenario.neighbors('empty?').sample)
+  }
+end
+
+lesson "Walks to open space if health is full and path is blocked" do
   conditions ->(scenario) {
     open_spaces = scenario.neighbors("empty?")
     enemy_spaces = scenario.neighbors('enemy?')
@@ -162,7 +173,7 @@ lesson "Attack enemy blocking ticking captive even if enemy is bound" do
   }
 end
 
-lesson "Move toward enemy if not a neighbor and health is full and no ticking and path clear" do
+lesson "Walk toward enemy if not a neighbor and health is full and no ticking and path clear" do
   conditions ->(scenario) {
     if scenario.any_enemies? and scenario.warrior_health == 20 and scenario.direction_of_ticking.nil? and scenario.neighbors('empty?').include?(scenario.targeted_enemy_direction) and not scenario.neighbors('stairs?').include?(scenario.targeted_enemy_direction)
       return 0.7
@@ -175,7 +186,7 @@ lesson "Move toward enemy if not a neighbor and health is full and no ticking an
   }
 end
 
-lesson "Move toward enemy if not a neighbor and health is full and no ticking and path is blocked" do
+lesson "Walk toward enemy if not a neighbor and health is full and no ticking and path is blocked" do
   conditions ->(scenario) {
     if (scenario.all_spaces('Sludge').count > 0 or scenario.all_spaces('Thick Sludge').count > 0) and scenario.warrior_health == 20 and scenario.direction_of_ticking.nil? and scenario.neighbors('empty?').include?(scenario.targeted_enemy_direction) and scenario.neighbors('stairs?').include?(scenario.targeted_enemy_direction)
       return 0.8

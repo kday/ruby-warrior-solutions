@@ -18,12 +18,13 @@ describe Brain do
     @scenario.direction_of_ticking = nil
   end
 
-  it "rests when health is less than 20 and no enemies are near by" do
+  it "rests when health is less than 20 and no enemies are near by by level is not clear" do
     @scenario.warrior_health = 19
     @scenario.direction_of_stairs = :forward
     @scenario.backward = WallSpace.new()
     @scenario.left = WallSpace.new()
     @scenario.right = WallSpace.new()
+    @scenario.filled_spaces = [SludgeSpace.new()]
     action = Brain.decide(@scenario)
     action.type.should eq('rest!')
   end
@@ -218,5 +219,22 @@ describe Brain do
     action = Brain.decide(@scenario)
     action.type.should eq ('walk!')
     action.option.should_not eq(:forward)
+  end
+
+  it "walks toward the stairs (and doesn't rest) if health is < 20 and the level is clear" do
+    @scenario.warrior_health = 1
+    @scenario.direction_of_stairs = :left
+    action = Brain.decide(@scenario)
+    action.type.should eq('walk!')
+    action.option.should eq(:left)
+  end
+
+  it "walks toward the stairs (and doesn't rest) if health is < 20 and the level is clear but path blocked" do
+    @scenario.warrior_health = 1
+    @scenario.direction_of_stairs = :left
+    @scenario.left = WallSpace.new()
+    action = Brain.decide(@scenario)
+    action.type.should eq('walk!')
+    action.option.should_not eq(:left)
   end
 end
