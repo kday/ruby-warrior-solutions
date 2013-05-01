@@ -237,4 +237,11 @@ describe Brain do
     action.type.should eq('walk!')
     action.option.should_not eq(:left)
   end
+
+  it "attacks an unbound neighbor enemy if health is full and no ticking" do
+    @scenario.left = ThickSludgeSpace.new(bound = true)
+    action = Brain.decide(@scenario)
+    action.type.should eq('attack!')
+    action.option.should eq(:left)
+  end
 end

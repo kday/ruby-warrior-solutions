@@ -15,9 +15,8 @@ end
 
 lesson "Attack when at least one unbound enemy is near by and no captives ticking" do
   conditions ->(scenario) {
-    total_neighbor_enemies = scenario.neighbors('Sludge').count + scenario.neighbors('Thick Sludge').count
-    if total_neighbor_enemies > 0 and scenario.all_spaces('ticking?').count == 0
-      return 0.3
+    if scenario.neighbors('enemy?').count > 0 and scenario.all_spaces('ticking?').count == 0
+      return 0.4
       else
       return 0.0
     end
@@ -29,6 +28,19 @@ lesson "Attack when at least one unbound enemy is near by and no captives tickin
       direction = scenario.any_enemy_neighbor_direction
     end
     return Action.new('attack!', direction)
+  }
+end
+
+lesson "Attack bound enemy if health is full and all neighbor enemies are bound and no ticking" do
+  conditions ->(scenario) {
+    if scenario.warrior_health == 20 and scenario.neighbors('enemy?').count ==  0 and not scenario.any_enemy_neighbor_direction.nil? and scenario.all_spaces('ticking?').count == 0
+      return 0.4
+    else
+      return 0.0
+    end
+  }
+  response ->(scenario) {
+    return Action.new('attack!', scenario.any_enemy_neighbor_direction)
   }
 end
 
@@ -63,7 +75,7 @@ lesson "Walks to open space if health is full and path is blocked" do
     open_spaces = scenario.neighbors("empty?")
     enemy_spaces = scenario.neighbors('enemy?')
     if scenario.warrior_health == 20 and not open_spaces.include?(scenario.direction_of_stairs) and not enemy_spaces.include?(scenario.direction_of_stairs)
-      return 0.5
+      return 0.1
     else
       return 0.0
     end
