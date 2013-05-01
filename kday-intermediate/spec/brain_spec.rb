@@ -244,4 +244,14 @@ describe Brain do
     action.type.should eq('attack!')
     action.option.should eq(:left)
   end
+
+  it "rescues neighbor captive when no enemies exist and health is < 20" do
+    @scenario.filled_spaces = [CaptiveSpace.new()]
+    @scenario.backward = CaptiveSpace.new()
+    @scenario.targeted_captive_direction = :backward
+    @scenario.warrior_health = 1
+    action = Brain.decide(@scenario)
+    action.type.should eq('rescue!')
+    action.option.should eq(:backward)
+  end
 end

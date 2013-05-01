@@ -1,8 +1,8 @@
 require_relative 'action'
 
-lesson "Rest when health < 20 and no enemies near by and level is not cleared yet" do
+lesson "Rest when health < 20 and no enemies near by and level is not cleared of enemies yet" do
   conditions ->(scenario) {
-    if scenario.warrior_health < 20 and scenario.neighbors('enemy?').count == 0 and scenario.all_spaces().count > 0
+    if scenario.warrior_health < 20 and scenario.neighbors('enemy?').count == 0 and scenario.any_enemies?
       return 0.4
     else
       return 0.0
