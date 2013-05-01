@@ -43,7 +43,7 @@ describe Player do
     action.option.should eq(:forward)
   end
 
-  it "attacks when health is less than 20 and an enemy is near by" do
+  it "attacks when health is less than full and an enemy is near by" do
     @scenario.warrior_health = 19
     @scenario.direction_of_stairs = :forward
     @scenario.forward = SludgeSpace.new()
@@ -234,7 +234,7 @@ describe Player do
     action.option.should_not eq(:forward)
   end
 
-  it "walks toward the stairs (and doesn't rest) if health is < 20 and the level is clear" do
+  it "walks toward the stairs (and doesn't rest) if health is less than full and the level is clear" do
     @scenario.warrior_health = 1
     @scenario.direction_of_stairs = :left
     action = @player.decide(@scenario)
@@ -242,7 +242,7 @@ describe Player do
     action.option.should eq(:left)
   end
 
-  it "walks toward the stairs (and doesn't rest) if health is < 20 and the level is clear but path blocked" do
+  it "walks toward the stairs (and doesn't rest) if health is less than full and the level is clear but path blocked" do
     @scenario.warrior_health = 1
     @scenario.direction_of_stairs = :left
     @scenario.left = WallSpace.new()
@@ -258,7 +258,7 @@ describe Player do
     action.option.should eq(:left)
   end
 
-  it "rescues neighbor captive when no enemies exist and health is < 20" do
+  it "rescues neighbor captive when no enemies exist and health is less than full" do
     @scenario.filled_spaces = [CaptiveSpace.new()]
     @scenario.backward = CaptiveSpace.new()
     @scenario.targeted_captive_direction = :backward
