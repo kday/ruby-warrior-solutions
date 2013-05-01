@@ -14,18 +14,18 @@ lesson "Rest when health < 20 and no enemies near by" do
   }
 end
 
-lesson "Attack when at least one enemy is near by and no captives ticking" do
+lesson "Attack when at least one unbound enemy is near by and no captives ticking" do
   conditions ->(scenario) {
     total_neighbor_enemies = scenario.neighbors('Sludge').count + scenario.neighbors('Thick Sludge').count
     if total_neighbor_enemies > 0 and scenario.all_spaces('ticking?').count == 0
-      return 0.8
+      return 0.3
       else
       return 0.0
     end
   }
   response ->(scenario) {
     if not scenario.any_unbound_enemy_neighbor_direction.nil?
-      direction =  scenario.any_unbound_enemy_neighbor_direction
+      direction = scenario.any_unbound_enemy_neighbor_direction
     else
       direction = scenario.any_enemy_neighbor_direction
     end
@@ -35,7 +35,7 @@ end
 
 lesson "Move toward the door if health is full and path is clear and level is cleared" do
   conditions ->(scenario) {
-    open_spaces = scenario.neighbors("empty?")
+    open_spaces = scenario.neighbors("empty?") and not scenario.any_enemies?
     if scenario.warrior_health == 20 and open_spaces.include?(scenario.direction_of_stairs) and scenario.all_spaces.count == 0
       return 0.2
     else
@@ -164,7 +164,7 @@ end
 
 lesson "Move toward enemy if not a neighbor and health is full and no ticking and path clear" do
   conditions ->(scenario) {
-    if (scenario.all_spaces('Sludge').count > 0 or scenario.all_spaces('Thick Sludge').count > 0) and scenario.warrior_health == 20 and scenario.direction_of_ticking.nil? and scenario.neighbors('empty?').include?(scenario.targeted_enemy_direction) and not scenario.neighbors('stairs?').include?(scenario.targeted_enemy_direction)
+    if scenario.any_enemies? and scenario.warrior_health == 20 and scenario.direction_of_ticking.nil? and scenario.neighbors('empty?').include?(scenario.targeted_enemy_direction) and not scenario.neighbors('stairs?').include?(scenario.targeted_enemy_direction)
       return 0.7
     else
       return 0.0

@@ -41,19 +41,6 @@ describe Brain do
     action.option.should eq(:forward)
   end
 
-  it "attacks when health is less than 20 and an enemy is near by even if enemy is bound" do
-    @scenario.warrior_health = 19
-    @scenario.direction_of_stairs = :forward
-    @scenario.forward = SludgeSpace.new()
-    @scenario.backward = WallSpace.new()
-    @scenario.left = WallSpace.new()
-    @scenario.right = WallSpace.new()
-    @scenario.filled_spaces = [SludgeSpace.new()]
-    action = Brain.decide(@scenario)
-    action.type.should eq('attack!')
-    action.option.should eq(:forward)
-  end
-
   it "moves toward the door if health is full with no obstacles and level is clear" do
     @scenario.direction_of_stairs = :right
     @scenario.backward = WallSpace.new()

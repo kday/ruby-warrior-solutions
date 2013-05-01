@@ -1,9 +1,10 @@
 class Scenario
-  attr_accessor :left, :right, :forward, :backward, :warrior_health, :distance_to_stairs, :direction_of_stairs, :filled_spaces, :direction_of_ticking, :spaces_toward_ticking, :targeted_enemy_direction, :targeted_captive_direction
+  attr_accessor :warrior, :left, :right, :forward, :backward, :warrior_health, :distance_to_stairs, :direction_of_stairs, :filled_spaces, :direction_of_ticking, :spaces_toward_ticking, :targeted_enemy_direction, :targeted_captive_direction
   DIRECTIONS = [:left, :right, :forward, :backward]
 
   def self.build(warrior)
     scenario = Scenario.new()
+
     DIRECTIONS.each do |direction|
       scenario.send(direction.to_s + "=", warrior.feel(direction))
     end
@@ -12,6 +13,7 @@ class Scenario
     scenario.warrior_health = warrior.health
     scenario.direction_of_stairs = warrior.direction_of_stairs
     scenario.filled_spaces = warrior.listen
+
 
     if scenario.all_spaces('Thick Sludge').count > 0
       scenario.targeted_enemy_direction = warrior.direction_of(scenario.all_spaces('Thick Sludge')[0])
@@ -95,6 +97,10 @@ class Scenario
   end
 
   def any_enemies?
-    return if self.all_spaces('Sludge').count > 0 or self.all_spaces('Thick Sludge').count > 0
+    if self.all_spaces('Sludge').count > 0 or self.all_spaces('Thick Sludge').count > 0
+      return true
+    else
+      return false
+    end
   end
 end
