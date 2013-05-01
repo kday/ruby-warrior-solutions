@@ -16,13 +16,10 @@ describe Scenario do
   end
 
   it "returns all neighbor spaces with no filter" do
-    scenario = Scenario.new()
-    scenario.forward = WallSpace.new()
-    scenario.backward = EmptySpace.new()
-    scenario.left = WallSpace.new()
-    scenario.right = WallSpace.new()
-
-    empty_spaces = scenario.neighbors()
+    @scenario.forward = WallSpace.new()
+    @scenario.left = WallSpace.new()
+    @scenario.right = WallSpace.new()
+    empty_spaces = @scenario.neighbors()
     empty_spaces.count.should eq 4
     empty_spaces.should include :forward
     empty_spaces.should include :backward
@@ -31,25 +28,19 @@ describe Scenario do
   end
 
   it "returns empty neighbor spaces with empty? filter" do
-    scenario = Scenario.new()
-    scenario.forward = WallSpace.new()
-    scenario.backward = EmptySpace.new()
-    scenario.left = WallSpace.new()
-    scenario.right = WallSpace.new()
-
-    empty_spaces = scenario.neighbors('empty?')
+    @scenario.forward = WallSpace.new()
+    @scenario.left = WallSpace.new()
+    @scenario.right = WallSpace.new()
+    empty_spaces = @scenario.neighbors('empty?')
     empty_spaces.count.should eq 1
     empty_spaces.should include :backward
   end
 
   it "returns enemy neighbor spaces with enemy? filter" do
-    scenario = Scenario.new()
-    scenario.forward = SludgeSpace.new()
-    scenario.backward = EmptySpace.new()
-    scenario.left = WallSpace.new()
-    scenario.right = WallSpace.new()
-
-    empty_spaces = scenario.neighbors('enemy?')
+    @scenario.forward = SludgeSpace.new()
+    @scenario.left = WallSpace.new()
+    @scenario.right = WallSpace.new()
+    empty_spaces = @scenario.neighbors('enemy?')
     empty_spaces.count.should eq 1
     empty_spaces.should include :forward
   end
