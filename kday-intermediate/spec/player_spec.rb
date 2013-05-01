@@ -2,8 +2,9 @@ require 'rspec'
 require_relative 'spec_helper'
 require_relative 'mocks'
 
-describe Brain do
+describe Player do
   before(:each) do
+    @player = Player.new()
     @scenario = Scenario.new()
     @scenario.warrior_health = 20
     @scenario.direction_of_stairs = :backward
@@ -25,7 +26,7 @@ describe Brain do
     @scenario.left = WallSpace.new()
     @scenario.right = WallSpace.new()
     @scenario.filled_spaces = [SludgeSpace.new()]
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('rest!')
   end
 
@@ -37,7 +38,7 @@ describe Brain do
     @scenario.left = WallSpace.new()
     @scenario.right = WallSpace.new()
     @scenario.filled_spaces = [SludgeSpace.new()]
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('attack!')
     action.option.should eq(:forward)
   end
@@ -46,7 +47,7 @@ describe Brain do
     @scenario.direction_of_stairs = :right
     @scenario.backward = WallSpace.new()
     @scenario.left = WallSpace.new()
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('walk!')
     action.option.should eq(:right)
   end
@@ -54,7 +55,7 @@ describe Brain do
   it "moves toward enemy if not a neighbor and health is full and no ticking" do
     @scenario.filled_spaces = [SludgeSpace.new()]
     @scenario.targeted_enemy_direction = :right
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('walk!')
     action.option.should eq(:right)
   end
@@ -64,7 +65,7 @@ describe Brain do
     @scenario.backward = WallSpace.new()
     @scenario.left = WallSpace.new()
     @scenario.right = WallSpace.new()
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('walk!')
     action.option.should_not eq(:right)
   end
@@ -76,7 +77,7 @@ describe Brain do
     @scenario.left = SludgeSpace.new()
     @scenario.right = WallSpace.new()
     @scenario.filled_spaces = [SludgeSpace.new(), SludgeSpace.new()]
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('bind!')
   end
 
@@ -84,7 +85,7 @@ describe Brain do
     @scenario.left = SludgeSpace.new()
     @scenario.right = ThickSludgeSpace.new()
     @scenario.filled_spaces = [ThickSludgeSpace.new(), SludgeSpace.new()]
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('bind!')
     action.option.should eq(:right)
   end
@@ -94,7 +95,7 @@ describe Brain do
     @scenario.left = SludgeSpace.new()
     @scenario.right = ThickSludgeSpace.new(bound = true)
     @scenario.filled_spaces = [ThickSludgeSpace.new(bound = true), SludgeSpace.new(), SludgeSpace.new()]
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('bind!')
     action.option.should eq(:left)
   end
@@ -102,7 +103,7 @@ describe Brain do
   it "walks toward ticking captives before fighting and path clear" do
     @scenario.filled_spaces = [CaptiveSpace.new(ticking = true), SludgeSpace.new()]
     @scenario.direction_of_ticking = :right
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('walk!')
     action.option.should eq(:right)
   end
@@ -114,7 +115,7 @@ describe Brain do
     @scenario.forward = WallSpace.new()
     @scenario.filled_spaces = [CaptiveSpace.new(ticking = true), SludgeSpace.new()]
     @scenario.direction_of_ticking = :right
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('attack!')
     action.option.should eq(:right)
   end
@@ -124,7 +125,7 @@ describe Brain do
     @scenario.left = SludgeSpace.new()
     @scenario.filled_spaces = [CaptiveSpace.new(ticking = true), SludgeSpace.new()]
     @scenario.direction_of_ticking = :right
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('rescue!')
     action.option.should eq(:right)
   end
@@ -134,7 +135,7 @@ describe Brain do
     @scenario.filled_spaces = [CaptiveSpace.new(ticking = true), SludgeSpace.new(), SludgeSpace.new()]
     @scenario.direction_of_ticking = :right
     @scenario.spaces_toward_ticking = [SludgeSpace.new(), SludgeSpace.new(), EmptySpace.new()]
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('detonate!')
     action.option.should eq(:right)
   end
@@ -146,7 +147,7 @@ describe Brain do
     @scenario.filled_spaces = [CaptiveSpace.new(ticking = true), SludgeSpace.new(), SludgeSpace.new(), SludgeSpace.new()]
     @scenario.direction_of_ticking = :forward
     @scenario.spaces_toward_ticking = [EmptySpace.new(), SludgeSpace.new(), CaptiveSpace.new(ticking = true)]
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('rest!')
   end
 
@@ -157,7 +158,7 @@ describe Brain do
     @scenario.filled_spaces = [CaptiveSpace.new(ticking = true), SludgeSpace.new(), SludgeSpace.new(), SludgeSpace.new()]
     @scenario.direction_of_ticking = :forward
     @scenario.spaces_toward_ticking = [EmptySpace.new(), EmptySpace.new(), CaptiveSpace.new(ticking = true)]
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('walk!')
     action.option.should eq(:forward)
   end
@@ -168,7 +169,7 @@ describe Brain do
     @scenario.left = SludgeSpace.new()
     @scenario.direction_of_ticking = :right
     @scenario.filled_spaces = [CaptiveSpace.new(ticking = true), SludgeSpace.new()]
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('attack!')
     action.option.should eq(:right)
   end
@@ -177,7 +178,7 @@ describe Brain do
     @scenario.right = SludgeSpace.new(bound = true)
     @scenario.left = SludgeSpace.new(bound = true)
     @scenario.backward = SludgeSpace.new()
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('attack!')
     action.option.should eq(:backward)
   end
@@ -185,7 +186,7 @@ describe Brain do
   it "rests when energy < 20 and neighbor enemies bound and no ticking" do
     @scenario.warrior_health = 19
     @scenario.right = SludgeSpace.new(bound = true)
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('rest!')
   end
 
@@ -193,12 +194,12 @@ describe Brain do
     @scenario.warrior_health = 20
     @scenario.filled_spaces = [CaptiveSpace.new()]
     @scenario.targeted_captive_direction = :left
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('walk!')
     action.option.should eq(:left)
 
     @scenario.warrior_health = 1
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('walk!')
     action.option.should eq(:left)
   end
@@ -207,7 +208,7 @@ describe Brain do
     @scenario.warrior_health = 20
     @scenario.right = CaptiveSpace.new()
     @scenario.targeted_captive_direction = :right
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('rescue!')
     action.option.should eq(:right)
   end
@@ -216,7 +217,7 @@ describe Brain do
     @scenario.filled_spaces = [SludgeSpace.new()]
     @scenario.targeted_enemy_direction = :forward
     @scenario.forward = StairsSpace.new()
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq ('walk!')
     action.option.should_not eq(:forward)
   end
@@ -224,7 +225,7 @@ describe Brain do
   it "walks toward the stairs (and doesn't rest) if health is < 20 and the level is clear" do
     @scenario.warrior_health = 1
     @scenario.direction_of_stairs = :left
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('walk!')
     action.option.should eq(:left)
   end
@@ -233,14 +234,14 @@ describe Brain do
     @scenario.warrior_health = 1
     @scenario.direction_of_stairs = :left
     @scenario.left = WallSpace.new()
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('walk!')
     action.option.should_not eq(:left)
   end
 
   it "attacks an unbound neighbor enemy if health is full and no ticking" do
     @scenario.left = ThickSludgeSpace.new(bound = true)
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('attack!')
     action.option.should eq(:left)
   end
@@ -250,7 +251,7 @@ describe Brain do
     @scenario.backward = CaptiveSpace.new()
     @scenario.targeted_captive_direction = :backward
     @scenario.warrior_health = 1
-    action = Brain.decide(@scenario)
+    action = @player.decide(@scenario)
     action.type.should eq('rescue!')
     action.option.should eq(:backward)
   end
