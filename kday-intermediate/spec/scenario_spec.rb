@@ -49,4 +49,19 @@ describe Scenario do
     @scenario.right = SludgeSpace.new()
     @scenario.neighbors('Sludge').count.should eq(1)
   end
+
+  it "returns min clear health for a level with one sludge" do
+    @scenario.filled_spaces = [SludgeSpace.new()]
+    @scenario.min_clear_health.should eq(10)
+  end
+
+  it "returns min clear health for a level with one thick sludge" do
+    @scenario.filled_spaces = [ThickSludgeSpace.new()]
+    @scenario.min_clear_health.should eq(16)
+  end
+
+  it "returns min clear health for a level with many various sludges" do
+    @scenario.filled_spaces = [ThickSludgeSpace.new(), SludgeSpace.new()]
+    @scenario.min_clear_health.should eq(20)
+  end
 end
