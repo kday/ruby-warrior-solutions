@@ -19,8 +19,8 @@ describe Player do
     @scenario.direction_of_ticking = nil
   end
 
-  it "rests when health is less than 20 and no enemies are near by by level is not clear" do
-    @scenario.warrior_health = 19
+  it "rests when health is less than min clear health and no enemies are near by by level is not clear" do
+    @scenario.warrior_health = 4
     @scenario.direction_of_stairs = :forward
     @scenario.backward = WallSpace.new()
     @scenario.left = WallSpace.new()
@@ -28,6 +28,19 @@ describe Player do
     @scenario.filled_spaces = [SludgeSpace.new()]
     action = @player.decide(@scenario)
     action.type.should eq('rest!')
+  end
+
+  it "walks when health is greater than or equal to min clear health and no enemies are near by by level is not clear" do
+    @scenario.warrior_health = 19
+    @scenario.direction_of_stairs = :forward
+    @scenario.backward = WallSpace.new()
+    @scenario.left = WallSpace.new()
+    @scenario.right = WallSpace.new()
+    @scenario.filled_spaces = [SludgeSpace.new()]
+    @scenario.targeted_enemy_direction = :forward
+    action = @player.decide(@scenario)
+    action.type.should eq('walk!')
+    action.option.should eq(:forward)
   end
 
   it "attacks when health is less than 20 and an enemy is near by" do
@@ -43,7 +56,7 @@ describe Player do
     action.option.should eq(:forward)
   end
 
-  it "moves toward the door if health is full with no obstacles and level is clear" do
+  it "walks toward the door if health is full with no obstacles and level is clear" do
     @scenario.direction_of_stairs = :right
     @scenario.backward = WallSpace.new()
     @scenario.left = WallSpace.new()
@@ -52,7 +65,7 @@ describe Player do
     action.option.should eq(:right)
   end
 
-  it "moves toward enemy if not a neighbor and health is full and no ticking" do
+  it "walks toward enemy if not a neighbor and health is full and no ticking" do
     @scenario.filled_spaces = [SludgeSpace.new()]
     @scenario.targeted_enemy_direction = :right
     action = @player.decide(@scenario)
@@ -183,15 +196,15 @@ describe Player do
     action.option.should eq(:backward)
   end
 
-  it "rests when energy < 20 and neighbor enemies bound and no ticking" do
-    @scenario.warrior_health = 19
+  it "rests when energy < min clear health and neighbor enemies bound and no ticking" do
+    @scenario.warrior_health = 4
     @scenario.right = SludgeSpace.new(bound = true)
+    @scenario.filled_spaces = [SludgeSpace.new(bound = true)]
     action = @player.decide(@scenario)
     action.type.should eq('rest!')
   end
 
   it "walk toward captive when level is clear except for captive" do
-    @scenario.warrior_health = 20
     @scenario.filled_spaces = [CaptiveSpace.new()]
     @scenario.targeted_captive_direction = :left
     action = @player.decide(@scenario)
@@ -205,7 +218,6 @@ describe Player do
   end
 
   it "rescues captive if they're a neighbor and level is clear" do
-    @scenario.warrior_health = 20
     @scenario.right = CaptiveSpace.new()
     @scenario.targeted_captive_direction = :right
     action = @player.decide(@scenario)

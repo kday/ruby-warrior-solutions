@@ -1,8 +1,8 @@
 require_relative 'action'
 
-lesson "Rest when health < 20 and no enemies near by and level is not cleared of enemies yet" do
+lesson "Rest when health is full and no enemies near by and level is not cleared of enemies yet" do
   conditions ->(scenario) {
-    if scenario.warrior_health < 20 and scenario.neighbors('enemy?').count == 0 and scenario.any_enemies?
+    if scenario.warrior_health < scenario.min_clear_health and scenario.neighbors('enemy?').count == 0 and scenario.any_enemies?
       return 0.4
     else
       return 0.0
@@ -33,7 +33,7 @@ end
 
 lesson "Attack bound enemy if health is full and all neighbor enemies are bound and no ticking" do
   conditions ->(scenario) {
-    if scenario.warrior_health == 20 and scenario.neighbors('enemy?').count ==  0 and not scenario.any_enemy_neighbor_direction.nil? and scenario.all_spaces('ticking?').count == 0
+    if scenario.warrior_health >= scenario.min_clear_health and scenario.neighbors('enemy?').count ==  0 and not scenario.any_enemy_neighbor_direction.nil? and scenario.all_spaces('ticking?').count == 0
       return 0.4
     else
       return 0.0
@@ -70,11 +70,11 @@ lesson "Walk toward the stairs if level is cleared and path blocked" do
   }
 end
 
-lesson "Walks to open space if health is full and path is blocked" do
+lesson "Walks to open space if path is blocked" do
   conditions ->(scenario) {
     open_spaces = scenario.neighbors("empty?")
     enemy_spaces = scenario.neighbors('enemy?')
-    if scenario.warrior_health == 20 and not open_spaces.include?(scenario.direction_of_stairs) and not enemy_spaces.include?(scenario.direction_of_stairs)
+    if not open_spaces.include?(scenario.direction_of_stairs) and not enemy_spaces.include?(scenario.direction_of_stairs)
       return 0.1
     else
       return 0.0
@@ -185,9 +185,9 @@ lesson "Attack enemy blocking ticking captive even if enemy is bound" do
   }
 end
 
-lesson "Walk toward enemy if not a neighbor and health is full and no ticking and path clear" do
+lesson "Walk toward enemy if not a neighbor and health > min clear health and no ticking and path clear" do
   conditions ->(scenario) {
-    if scenario.any_enemies? and scenario.warrior_health == 20 and scenario.direction_of_ticking.nil? and scenario.neighbors('empty?').include?(scenario.targeted_enemy_direction) and not scenario.neighbors('stairs?').include?(scenario.targeted_enemy_direction)
+    if scenario.any_enemies? and scenario.warrior_health >= scenario.min_clear_health and scenario.direction_of_ticking.nil? and scenario.neighbors('empty?').include?(scenario.targeted_enemy_direction) and not scenario.neighbors('stairs?').include?(scenario.targeted_enemy_direction)
       return 0.7
     else
       return 0.0
@@ -200,7 +200,7 @@ end
 
 lesson "Walk toward enemy if not a neighbor and health is full and no ticking and path is blocked" do
   conditions ->(scenario) {
-    if (scenario.all_spaces('Sludge').count > 0 or scenario.all_spaces('Thick Sludge').count > 0) and scenario.warrior_health == 20 and scenario.direction_of_ticking.nil? and scenario.neighbors('empty?').include?(scenario.targeted_enemy_direction) and scenario.neighbors('stairs?').include?(scenario.targeted_enemy_direction)
+    if (scenario.all_spaces('Sludge').count > 0 or scenario.all_spaces('Thick Sludge').count > 0) and scenario.warrior_health >= scenario.min_clear_health and scenario.direction_of_ticking.nil? and scenario.neighbors('empty?').include?(scenario.targeted_enemy_direction) and scenario.neighbors('stairs?').include?(scenario.targeted_enemy_direction)
       return 0.8
     else
       return 0.0
@@ -213,9 +213,9 @@ lesson "Walk toward enemy if not a neighbor and health is full and no ticking an
   }
 end
 
-lesson "Rest when helath < 20 and neighbor enemies bound and no ticking" do
+lesson "Rest when helath is full and neighbor enemies bound and no ticking" do
   conditions ->(scenario) {
-    if scenario.warrior_health < 20 and scenario.neighbors('enemy?').count == 0 and scenario.direction_of_ticking.nil? and not scenario.any_enemy_neighbor_direction.nil?
+    if scenario.warrior_health < scenario.min_clear_health and scenario.neighbors('enemy?').count == 0 and scenario.direction_of_ticking.nil? and not scenario.any_enemy_neighbor_direction.nil?
       return 1.0
     else
       return 0.0
