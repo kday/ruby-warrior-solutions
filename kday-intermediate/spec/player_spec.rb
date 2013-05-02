@@ -279,7 +279,8 @@ describe Player do
     action.option.should eq(:forward)
   end
 
-  it "detonates a bound enemy neighbor if closet captive is out of blast radius" do
+  it "detonates a bound enemy neighbor if closet captive is out of blast radius and health > 4" do
+    @scenario.warrior_health = 5
     @scenario.filled_spaces = [CaptiveSpace.new(), ThickSludgeSpace.new(bound = true)]
     @scenario.forward = ThickSludgeSpace.new(bound = true)
     @scenario.closest_captive_distance = 3

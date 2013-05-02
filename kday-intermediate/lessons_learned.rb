@@ -216,7 +216,7 @@ end
 lesson "Rest when health is less than full and neighbor enemies bound and no ticking" do
   conditions ->(scenario) {
     if scenario.warrior_health < scenario.min_clear_health and scenario.neighbors('enemy?').count == 0 and scenario.direction_of_ticking.nil? and not scenario.any_enemy_neighbor_direction.nil?
-      return 1.0
+      return 0.9
     else
       return 0.0
     end
@@ -251,10 +251,10 @@ lesson "Rescue captive if they're a neighbor" do
     return Action.new('rescue!', scenario.targeted_captive_direction)
   }
 
-lesson "Detonate an enemy if enemy is a neighbor and captives are out of blast radius" do
+lesson "Detonate an enemy if enemy is a neighbor and captives are out of blast radius and health > 4" do
     conditions ->(scenario) {
-      if not scenario.any_enemy_neighbor_direction.nil? and not scenario.closest_captive_distance.nil? and scenario.closest_captive_distance > 2
-        return 1.0
+      if scenario.warrior_health > 4 and not scenario.any_enemy_neighbor_direction.nil? and not scenario.closest_captive_distance.nil? and scenario.closest_captive_distance > 2
+        return 0.95
       else
         return 0.0
       end
