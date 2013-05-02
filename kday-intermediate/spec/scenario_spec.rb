@@ -52,12 +52,12 @@ describe Scenario do
 
   it "returns min clear health for a level with one sludge" do
     @scenario.filled_spaces = [SludgeSpace.new()]
-    @scenario.min_clear_health.should eq(10)
+    @scenario.min_clear_health.should eq(9)
   end
 
   it "returns min clear health for a level with one thick sludge" do
     @scenario.filled_spaces = [ThickSludgeSpace.new()]
-    @scenario.min_clear_health.should eq(16)
+    @scenario.min_clear_health.should eq(15)
   end
 
   it "returns min clear health for a level with many various sludges" do
