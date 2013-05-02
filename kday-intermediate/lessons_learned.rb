@@ -251,9 +251,9 @@ lesson "Rescue captive if they're a neighbor" do
     return Action.new('rescue!', scenario.targeted_captive_direction)
   }
 
-lesson "Detonate an enemy neighbor if captives are out of blast radius and health is full" do
+lesson "Detonate an enemy neighbor if captives are out of blast radius and health is full plus some" do
     conditions ->(scenario) {
-      if scenario.warrior_health >= scenario.min_clear_health and not scenario.any_enemy_neighbor_direction.nil? and (scenario.closest_captive_distance.nil? or scenario.closest_captive_distance > 2)
+      if scenario.warrior_health >= scenario.min_clear_health + 2 and not scenario.any_enemy_neighbor_direction.nil? and (scenario.closest_captive_distance.nil? or scenario.closest_captive_distance > 2)
         return 0.8
       else
         return 0.0
