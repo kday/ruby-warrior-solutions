@@ -251,10 +251,10 @@ describe Player do
     action.option.should_not eq(:left)
   end
 
-  it "attacks an unbound neighbor enemy if health is full and no ticking" do
+  it "detonates an unbound neighbor enemy if health is full and no ticking" do
     @scenario.left = ThickSludgeSpace.new(bound = true)
     action = @player.decide(@scenario)
-    action.type.should eq('attack!')
+    action.type.should eq('detonate!')
     action.option.should eq(:left)
   end
 
