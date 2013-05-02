@@ -213,7 +213,7 @@ lesson "Walk toward enemy if not a neighbor and health is full and no ticking an
   }
 end
 
-lesson "Rest when helath is less than full and neighbor enemies bound and no ticking" do
+lesson "Rest when health is less than full and neighbor enemies bound and no ticking" do
   conditions ->(scenario) {
     if scenario.warrior_health < scenario.min_clear_health and scenario.neighbors('enemy?').count == 0 and scenario.direction_of_ticking.nil? and not scenario.any_enemy_neighbor_direction.nil?
       return 1.0
