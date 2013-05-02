@@ -17,6 +17,7 @@ describe Player do
     @scenario.targeted_enemy_direction = nil
     @scenario.targeted_captive_direction = nil
     @scenario.direction_of_ticking = nil
+    @scenario.closest_captive_distance = nil
   end
 
   it "rests when health is less than min clear health and no enemies are near by by level is not clear" do
@@ -266,5 +267,25 @@ describe Player do
     action = @player.decide(@scenario)
     action.type.should eq('rescue!')
     action.option.should eq(:backward)
+  end
+
+  it "detonates an unbound enemy neighbor if closet captive is out of blast radius" do
+    @scenario.filled_spaces = [CaptiveSpace.new(), ThickSludgeSpace.new()]
+    @scenario.forward = ThickSludgeSpace.new()
+    @scenario.closest_captive_distance = 3
+    @scenario.targeted_enemy_direction = :forward
+    action = @player.decide(@scenario)
+    action.type.should eq('detonate!')
+    action.option.should eq(:forward)
+  end
+
+  it "detonates a bound enemy neighbor if closet captive is out of blast radius" do
+    @scenario.filled_spaces = [CaptiveSpace.new(), ThickSludgeSpace.new(bound = true)]
+    @scenario.forward = ThickSludgeSpace.new(bound = true)
+    @scenario.closest_captive_distance = 3
+    @scenario.targeted_enemy_direction = :forward
+    action = @player.decide(@scenario)
+    action.type.should eq('detonate!')
+    action.option.should eq(:forward)
   end
 end

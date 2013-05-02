@@ -250,4 +250,17 @@ lesson "Rescue captive if they're a neighbor" do
   response ->(scenario) {
     return Action.new('rescue!', scenario.targeted_captive_direction)
   }
+
+lesson "Detonate an enemy if enemy is a neighbor and captives are out of blast radius" do
+    conditions ->(scenario) {
+      if not scenario.any_enemy_neighbor_direction.nil? and not scenario.closest_captive_distance.nil? and scenario.closest_captive_distance > 2
+        return 1.0
+      else
+        return 0.0
+      end
+    }
+    response ->(scenario) {
+      return Action.new('detonate!', scenario.targeted_enemy_direction)
+    }
+  end
 end

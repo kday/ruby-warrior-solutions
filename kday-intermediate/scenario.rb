@@ -1,5 +1,5 @@
 class Scenario
-  attr_accessor :warrior, :left, :right, :forward, :backward, :warrior_health, :distance_to_stairs, :direction_of_stairs, :filled_spaces, :direction_of_ticking, :spaces_toward_ticking, :targeted_enemy_direction, :targeted_captive_direction
+  attr_accessor :warrior, :left, :right, :forward, :backward, :warrior_health, :distance_to_stairs, :direction_of_stairs, :filled_spaces, :direction_of_ticking, :spaces_toward_ticking, :targeted_enemy_direction, :targeted_captive_direction, :closest_captive_distance
   DIRECTIONS = [:left, :right, :forward, :backward]
   ENEMIES = ['Sludge', 'Thick Sludge']
 
@@ -10,11 +10,17 @@ class Scenario
       scenario.send(direction.to_s + "=", warrior.feel(direction))
     end
 
-    # These methods may not exist for a given level
     scenario.warrior_health = warrior.health
     scenario.direction_of_stairs = warrior.direction_of_stairs
     scenario.filled_spaces = warrior.listen
 
+    scenario.closest_captive_distance = nil
+    captives = scenario.all_spaces('Captive')
+    captives.each do |captive|
+      if scenario.closest_captive_distance.nil? or warrior.distance_of(captive) < scenario.closest_captive_distance
+        scenario.closest_captive_distance = warrior.distance_of(captive)
+      end
+    end
 
     if scenario.all_spaces('Thick Sludge').count > 0
       scenario.targeted_enemy_direction = warrior.direction_of(scenario.all_spaces('Thick Sludge')[0])
