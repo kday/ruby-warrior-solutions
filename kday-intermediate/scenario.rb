@@ -114,7 +114,7 @@ class Scenario
 
   def min_clear_health
     enemy_clear_health = 0
-    enemy_clear_health += self.all_spaces('Sludge').count * 9
+    enemy_clear_health += self.all_spaces('Sludge').count * 8
     enemy_clear_health += self.all_spaces('Thick Sludge').count * 15
     if enemy_clear_health < 20
       return enemy_clear_health

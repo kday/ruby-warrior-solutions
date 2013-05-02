@@ -149,7 +149,7 @@ lesson "Detonate bomb if two enemies are blocking a ticking captive" do
         scenario.spaces_toward_ticking.count > 0 and
         scenario.spaces_toward_ticking[0].enemy? and
         scenario.spaces_toward_ticking[1].enemy?
-      return 1.0
+      return 0.95
     else
       return 0.0
     end
@@ -175,7 +175,7 @@ end
 lesson "Attack enemy blocking ticking captive even if enemy is bound" do
   conditions ->(scenario) {
     if scenario.all_spaces('ticking?').count > 0 and scenario.neighbor(scenario.direction_of_ticking).to_s == 'Sludge' or scenario.neighbor(scenario.direction_of_ticking).to_s == 'Thick Sludge'
-      return 1.0
+      return 0.9
     else
       return 0.0
     end
@@ -253,8 +253,8 @@ lesson "Rescue captive if they're a neighbor" do
 
 lesson "Detonate an enemy if enemy is a neighbor and captives are out of blast radius and health > 4" do
     conditions ->(scenario) {
-      if scenario.warrior_health > 4 and not scenario.any_enemy_neighbor_direction.nil? and not scenario.closest_captive_distance.nil? and scenario.closest_captive_distance > 2
-        return 0.95
+      if scenario.warrior_health > 4 and not scenario.any_enemy_neighbor_direction.nil? and (scenario.closest_captive_distance.nil? or scenario.closest_captive_distance > 2)
+        return 0.8
       else
         return 0.0
       end
