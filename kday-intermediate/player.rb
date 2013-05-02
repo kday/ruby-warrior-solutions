@@ -1,6 +1,7 @@
 require_relative 'scenario'
 require_relative 'knowledge'
 require_relative 'helpers'
+require_relative 'action'
 
 class Player
   def play_turn(warrior)
@@ -12,7 +13,8 @@ class Player
     most_applicable_lesson = sorted_lessons.first
 
     if most_applicable_lesson.applicability(scenario) < 0.01
-      raise "I don't have any experience with this scenario!"
+     # Fall-back in case no lessons are applicable
+      return Action.new('rest!')
     else
       print_decision(sorted_lessons, scenario)
       return most_applicable_lesson.respond(scenario)
