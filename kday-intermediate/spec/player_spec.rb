@@ -44,7 +44,7 @@ describe Player do
     action.option.should eq(:forward)
   end
 
-  it "attacks when health is less than full and an enemy is near by" do
+  it "detonates when health is less than full and an enemy is near by" do
     @scenario.warrior_health = 19
     @scenario.direction_of_stairs = :forward
     @scenario.forward = SludgeSpace.new()
@@ -52,8 +52,9 @@ describe Player do
     @scenario.left = WallSpace.new()
     @scenario.right = WallSpace.new()
     @scenario.filled_spaces = [SludgeSpace.new()]
+    @scenario.targeted_enemy_direction = :forward
     action = @player.decide(@scenario)
-    action.type.should eq('attack!')
+    action.type.should eq('detonate!')
     action.option.should eq(:forward)
   end
 
@@ -188,12 +189,13 @@ describe Player do
     action.option.should eq(:right)
   end
 
-  it "attacks the unbound neighbor enemy before bound neighbor enemy" do
+  it "detonates the unbound neighbor enemy before bound neighbor enemy" do
     @scenario.right = SludgeSpace.new(bound = true)
     @scenario.left = SludgeSpace.new(bound = true)
     @scenario.backward = SludgeSpace.new()
+    @scenario.targeted_enemy_direction = :backward
     action = @player.decide(@scenario)
-    action.type.should eq('attack!')
+    action.type.should eq('detonate!')
     action.option.should eq(:backward)
   end
 
@@ -254,6 +256,7 @@ describe Player do
 
   it "detonates an unbound neighbor enemy if health is full and no ticking" do
     @scenario.left = ThickSludgeSpace.new(bound = true)
+    @scenario.targeted_enemy_direction = :left
     action = @player.decide(@scenario)
     action.type.should eq('detonate!')
     action.option.should eq(:left)
@@ -269,7 +272,8 @@ describe Player do
     action.option.should eq(:backward)
   end
 
-  it "detonates an unbound enemy neighbor if closet captive is out of blast radius" do
+  it "detonates an unbound enemy neighbor if closet captive is out of blast radius and health > 4" do
+    @scenario.warrior_health = 5
     @scenario.filled_spaces = [CaptiveSpace.new(), ThickSludgeSpace.new()]
     @scenario.forward = ThickSludgeSpace.new()
     @scenario.closest_captive_distance = 3
