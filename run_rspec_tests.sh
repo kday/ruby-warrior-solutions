@@ -1,1 +1,2 @@
-rspec kday-intermediate/spec
+cd kday-intermediate
+rspec spec
