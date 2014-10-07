@@ -1,1 +1,1 @@
-bundle exec rspec kday-intermediate/spec
+rspec kday-intermediate/spec
