@@ -1,2 +1,2 @@
 language: ruby
-script: run_rspec_tests.sh
+script: ./run_rspec_tests.sh
