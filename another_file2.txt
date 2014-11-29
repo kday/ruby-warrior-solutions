@@ -1,3 +1,0 @@
-Another test file.
-
-Adding lines to a text file.
